@@ -1,0 +1,5 @@
+#!/bin/sh
+PYTHONPATH=/usr/local/python26/bin/python
+export PYTHONPATH
+PROJECT_ROOT=/home/sites/osqa
+$PYTHONPATH $PROJECT_ROOT/manage.py send_email_alerts

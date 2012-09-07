@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+<!-- template ask.html -->
+{% load i18n extra_tags extra_filters %}
+{% load general_sidebar_tags %}
+{% block title %}{% spaceless %}{% trans "Ask a question to expert" %}{% endspaceless %}{% endblock %}
+{% block forejs %}
+        <script type='text/javascript' src='{% media  "/media/js/wmd/showdown.js" %}'></script>
+        <script type='text/javascript' src='{% media  "/media/js/wmd/wmd.js" %}'></script>
+        <link rel="stylesheet" type="text/css" href="{% media  "/media/js/wmd/wmd.css" %}" />
+        <script type="text/html" id="question-summary-template">
+            <div class="answer-summary">
+                <a href="%URL%"><div class="answer-votes">%SCORE%</div></a>
+                <div class="answer-link">
+                    <a class="question-hyperlink" href="%URL%" title="%SUMMARY%">%TITLE%</a>
+                </div>
+            </div>
+        </script>
+        <script type="text/javascript">
+        $(function(){
+            //set current module button style
+            $("#nav_ask_expert").attr('className',"on");
+            $('#editor').TextAreaResizer();
+
+            //toggle preview of editor
+			//todo remove copy-paste
+            var display = true;
+            var txt = "[{% trans "hide preview" %}]";
+            $('#pre-collapse').text(txt);
+            $('#pre-collapse').bind('click', function(){
+                txt = display ? "[{% trans "show preview" %}]" : "[{% trans "hide preview" %}]";
+                display = !display;
+                $('#previewer').toggle();
+                $('#pre-collapse').text(txt);
+            });
+
+            //Tags autocomplete action
+        	$("#id_tags").autocomplete("/matching_tags/", {
+                minChars: 1,
+        		matchContains: true,
+                max: 10,
+                multiple: true,
+                multipleSeparator: " ",
+                highlightItem: true,
+                scroll: true,
+                scrollHeight: 300,
+
+
+        		/*
+        		formatItem: function(row, i, max) {
+        			return row.n + " ("+ row.c +")";
+        		},
+                formatResult: function(row, i, max){
+                    return row.n;
+                }
+                */
+
+                formatItem: function(row, i, max, value) {
+                    return row[1] + " (" + row[2] + ")";
+                },
+
+                formatResult: function(row, i, max, value){
+                    return row[1];
+                }
+
+            });
+
+        });
+
+        function submitClicked(e, f) {
+            if(!(browserTester('chrome') || browserTester('safari'))) {
+                $("input.submit")[0].disabled=true;
+            }
+            window.removeEventListener('beforeunload', beforeUnload, true);
+            if (f) {
+                f.submit();
+            }
+        }
+
+        function beforeUnload(e) {
+            if($("input#id_title")[0].value != "" || $("textarea#editor")[0].value != "" || $("input#id_tags")[0].value != "") {
+                return yourWorkWillBeLost(e);
+            }
+        }
+        window.addEventListener('beforeunload', beforeUnload, true);
+
+        var related_questions_url = "{% url related_questions %}";
+        </script>
+        <script src="{% media "/media/js/osqa.ask.js" %}" type="text/javascript"></script>
+{% endblock %}
+
+{% block content %}
+<div id="main-bar" class="headNormal">
+	{% trans "Ask a question to expert" %}
+</div>
+<div id="main-body" class="ask-body">
+    <div id="askform">
+        <h1>直接向专家发出问题, 即将发布...</h1>
+    </div>
+</div>
+{% endblock %}
+
+{% block sidebar %}
+{% sidebar_upper %}
+{% sidebar_lower %}
+{% endblock %}
+
+{% block endjs %}
+{% endblock %}
+<!-- end template ask.html -->

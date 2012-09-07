@@ -1,0 +1,6 @@
+# 安装前提
+* django-sphinx
+* django-rosetta
+* memcached监听11211端口
+* 安装有sphinx
+
